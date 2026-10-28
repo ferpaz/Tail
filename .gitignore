@@ -1,0 +1,16 @@
+**/bin/
+**/obj/
+.vs/
+.vscode/*
+!.vscode/extensions.json
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+TestResults/
+**/TestResults/
+*.coverage
+*.coveragexml
+*.log
+releases/*
+!releases/.gitkeep
