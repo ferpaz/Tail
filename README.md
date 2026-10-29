@@ -12,13 +12,13 @@ It does not open a separate graphical window or change the console size.
 **PowerShell:**
 
 ```powershell
-.\releases\1.0.0\win-x64\tail.exe "C:\Logs\my application.log"
+tail.exe "C:\Logs\my application.log"
 ```
 
 **CMD:**
 
 ```cmd
-releases\1.0.0\win-x64\tail.exe "C:\Logs\my application.log"
+tail.exe "C:\Logs\my application.log"
 ```
 
 The published executable is **self-contained**: installing .NET is not required.
@@ -38,6 +38,7 @@ system's standard `tail` command.
 ```text
 tail --help       (or -h)
 tail --version    (or -v)
+tail application.log
 tail -- "-file.log"
 ```
 
