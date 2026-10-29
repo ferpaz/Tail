@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catl", "Catl\Catl.csproj", "{F5CD89B0-D093-4E9F-82B7-55A6390778CC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tail", "Tail\Tail.csproj", "{F5CD89B0-D093-4E9F-82B7-55A6390778CC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catl.Tests", "Catl.Tests\Catl.Tests.csproj", "{BA22A7EE-D9C2-4632-8073-83B56B0E2D74}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tail.Tests", "Tail.Tests\Tail.Tests.csproj", "{BA22A7EE-D9C2-4632-8073-83B56B0E2D74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catl.Packaging", "Catl.Packaging\Catl.Packaging.csproj", "{DFEDBF99-8B23-4B80-91B2-58E2BF6C6DE7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tail.Packaging", "Tail.Packaging\Tail.Packaging.csproj", "{DFEDBF99-8B23-4B80-91B2-58E2BF6C6DE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

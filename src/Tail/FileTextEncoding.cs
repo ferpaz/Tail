@@ -1,4 +1,4 @@
-namespace Catl;
+namespace Tail;
 
 public enum FileTextEncoding
 {

@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Catl\Catl.csproj" />
-    <ProjectReference Include="..\Catl.Packaging\Catl.Packaging.csproj" />
+    <ProjectReference Include="..\Tail\Tail.csproj" />
+    <ProjectReference Include="..\Tail.Packaging\Tail.Packaging.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Catl;
+namespace Tail;
 
 internal static class TextEncoding
 {

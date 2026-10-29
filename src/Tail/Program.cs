@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Text;
 
-namespace Catl;
+namespace Tail;
 
 internal static class Program
 {
@@ -16,13 +16,13 @@ internal static class Program
                     Console.WriteLine(CommandLine.Help);
                     return 0;
                 case CommandAction.Version:
-                    Console.WriteLine($"catl {Assembly.GetExecutingAssembly().GetName().Version!.ToString(3)}");
+                    Console.WriteLine($"tail {Assembly.GetExecutingAssembly().GetName().Version!.ToString(3)}");
                     return 0;
             }
 
             if (Console.IsInputRedirected || Console.IsOutputRedirected)
             {
-                Console.Error.WriteLine("Error: catl requires an interactive terminal (PowerShell, CMD or a Linux terminal).");
+                Console.Error.WriteLine("Error: tail requires an interactive terminal (PowerShell, CMD or a Linux terminal).");
                 return 1;
             }
 
@@ -43,7 +43,7 @@ internal static class Program
                                    or DecoderFallbackException or NotSupportedException)
         {
             Console.Error.WriteLine($"Error: {ex.Message}");
-            Console.Error.WriteLine("Use catl --help for usage information.");
+            Console.Error.WriteLine("Use tail --help for usage information.");
             return 1;
         }
     }

@@ -1,20 +1,20 @@
-namespace Catl;
+namespace Tail;
 
 public enum CommandAction { View, Help, Version }
 
 public sealed record CommandLine(CommandAction Action, string? FilePath = null)
 {
     public const string Help = """
-        catl - Live text and log viewer
+        tail - Live text and log viewer
 
         Usage:
-          catl <file>
-          catl -- <file whose name starts with a hyphen>
-          catl --help    | -h
-          catl --version | -v
+          tail <file>
+          tail -- <file whose name starts with a hyphen>
+          tail --help    | -h
+          tail --version | -v
 
         Use quotes if the path contains spaces.
-        Example: catl "C:\Logs\my application.log"
+        Example: tail "C:\Logs\my application.log"
 
         Text: .txt, .log, .dat (text only), .csv, .tsv, .json, .jsonl,
         .ndjson, .xml, .yaml, .yml, .ini, .cfg, .conf, .md and others.

@@ -1,17 +1,17 @@
 using System.Formats.Tar;
 using System.IO.Compression;
-using Catl.Packaging;
+using Tail.Packaging;
 
-namespace Catl.Tests;
+namespace Tail.Tests;
 
 public sealed class ReleaseArchiveTests
 {
     [Theory]
-    [InlineData(".zip", "catl.exe")]
-    [InlineData(".tar.gz", "catl")]
+    [InlineData(".zip", "tail.exe")]
+    [InlineData(".tar.gz", "tail")]
     public void PackageContainsOnlyBinaryWithOriginalContent(string extension, string binaryName)
     {
-        var directory = Path.Combine(Path.GetTempPath(), $"catl-package-tests-{Guid.NewGuid():N}");
+        var directory = Path.Combine(Path.GetTempPath(), $"tail-package-tests-{Guid.NewGuid():N}");
         Directory.CreateDirectory(directory);
         var binaryPath = Path.Combine(directory, binaryName);
         var archivePath = Path.Combine(directory, "release" + extension);

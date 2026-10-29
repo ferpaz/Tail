@@ -1,9 +1,8 @@
 using System.Diagnostics;
 using System.Text;
-using Catl;
 using Terminal.Gui;
 
-namespace Catl.Tests;
+namespace Tail.Tests;
 
 public sealed class LogWindowTests
 {

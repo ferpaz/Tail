@@ -1,9 +1,9 @@
 <Project>
   <PropertyGroup>
     <Version>1.0.0</Version>
-    <Title>Catl - Live text and log viewer</Title>
+    <Title>Tail - Live text and log viewer</Title>
     <AssemblyTitle>$(Title)</AssemblyTitle>
-    <Product>Catl</Product>
+    <Product>Tail</Product>
     <Authors>Fernando Paz</Authors>
     <Company>$(Authors)</Company>
     <Copyright>Copyright (c) 2026 Fernando Paz</Copyright>

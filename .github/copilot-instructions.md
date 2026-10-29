@@ -1,6 +1,6 @@
-# Catl repository instructions
+# Tail repository instructions
 
-Catl is a read-only, full-screen live log viewer for Windows and Linux, written
+Tail is a read-only, full-screen live log viewer for Windows and Linux, written
 in C# targeting .NET 10. User documentation is in `README.md`; UI labels,
 command-line help, error messages, scripts and code identifiers are English.
 
@@ -9,20 +9,20 @@ command-line help, error messages, scripts and code identifiers are English.
 Run these commands from the repository root in PowerShell with the .NET 10 SDK:
 
 ```powershell
-dotnet build .\src\Catl.sln --configuration Release
-dotnet test .\src\Catl.sln --configuration Release
+dotnet build .\src\Tail.sln --configuration Release
+dotnet test .\src\Tail.sln --configuration Release
 
 # One test method (all cases if the method is a theory):
-dotnet test .\src\Catl.Tests\Catl.Tests.csproj --filter "FullyQualifiedName=Catl.Tests.TailReaderTests.PreservesSplitUtf8CharacterAndBom"
+dotnet test .\src\Tail.Tests\Tail.Tests.csproj --filter "FullyQualifiedName=Tail.Tests.TailReaderTests.PreservesSplitUtf8CharacterAndBom"
 
 # One test class:
-dotnet test .\src\Catl.Tests\Catl.Tests.csproj --filter "FullyQualifiedName~Catl.Tests.LogWindowTests"
+dotnet test .\src\Tail.Tests\Tail.Tests.csproj --filter "FullyQualifiedName~Tail.Tests.LogWindowTests"
 
 # Formatting/analyzer check, or apply formatting:
-dotnet format .\src\Catl.sln --verify-no-changes
-dotnet format .\src\Catl.sln
+dotnet format .\src\Tail.sln --verify-no-changes
+dotnet format .\src\Tail.sln
 
-dotnet run --project .\src\Catl -- "C:\Logs\application.log"
+dotnet run --project .\src\Tail -- "C:\Logs\application.log"
 ```
 
 `src\Directory.Build.props` enables warnings-as-errors, latest analysis and
@@ -86,7 +86,7 @@ exercises real file appends, concurrent writers, rotation and split encodings.
 `LogWindowTests` initializes Terminal.Gui's `FakeDriver`, drives keys/mouse and
 resize events through the main loop, and always calls `Application.Shutdown`.
 Terminal.Gui application state is global: keep UI tests serialized (currently
-they reside in one xUnit test class). The app exposes internals to `Catl.Tests`
+they reside in one xUnit test class). The app exposes internals to `Tail.Tests`
 using `InternalsVisibleTo`. Archive tests check exact contents and Linux mode.
 
 ## Versioning and publication
@@ -105,10 +105,10 @@ after each change. Publication must succeed before creating that commit.
 
 The matrix is Windows x64/x86/ARM64 plus Linux glibc and musl x64/ARM32/ARM64.
 Publications are self-contained single-file, untrimmed executables. Each
-`releases\<version>\<RID>` contains only `catl.exe` (Windows) or `catl` (Linux).
-Sibling archives named `catl-<version>-<RID>.zip` or `.tar.gz` contain only that
+`releases\<version>\<RID>` contains only `tail.exe` (Windows) or `tail` (Linux).
+Sibling archives named `tail-<version>-<RID>.zip` or `.tar.gz` contain only that
 binary at the archive root; Linux TAR entries must have mode 0755 even when
-packaged on Windows. `Catl.Packaging` implements this with .NET compression/TAR
+packaged on Windows. `Tail.Packaging` implements this with .NET compression/TAR
 APIs, invoked by the script. Preserve staging cleanup and refusal to delete
 unexpected files in destination folders. Release binaries, archives, `bin` and
 `obj` are ignored by Git; only `releases\.gitkeep` tracks the release directory.

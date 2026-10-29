@@ -1,7 +1,7 @@
 using System.Formats.Tar;
 using System.IO.Compression;
 
-namespace Catl.Packaging;
+namespace Tail.Packaging;
 
 public static class ReleaseArchive
 {

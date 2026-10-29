@@ -19,7 +19,7 @@ foreach ($rid in $Runtime) {
     }
 }
 
-$project = Join-Path $PSScriptRoot "src\Catl\Catl.csproj"
+$project = Join-Path $PSScriptRoot "src\Tail\Tail.csproj"
 $versionOutput = & dotnet msbuild $project -nologo -getProperty:Version
 if ($LASTEXITCODE -ne 0) {
     throw "Could not read the version from src\Directory.Build.props."
@@ -30,17 +30,17 @@ if ($version -notmatch '^\d+\.\d+\.\d+$') {
 }
 
 $versionFolder = Join-Path (Join-Path $PSScriptRoot "releases") $version
-$packagerProject = Join-Path $PSScriptRoot "src\Catl.Packaging\Catl.Packaging.csproj"
+$packagerProject = Join-Path $PSScriptRoot "src\Tail.Packaging\Tail.Packaging.csproj"
 & dotnet build $packagerProject --configuration Release --nologo --verbosity minimal
 if ($LASTEXITCODE -ne 0) {
     throw "Could not build the release packager."
 }
-$packager = Join-Path $PSScriptRoot "src\Catl.Packaging\bin\Release\net10.0\Catl.Packaging.dll"
-$staging = Join-Path ([System.IO.Path]::GetTempPath()) "catl-publish-$([guid]::NewGuid().ToString('N'))"
+$packager = Join-Path $PSScriptRoot "src\Tail.Packaging\bin\Release\net10.0\Tail.Packaging.dll"
+$staging = Join-Path ([System.IO.Path]::GetTempPath()) "tail-publish-$([guid]::NewGuid().ToString('N'))"
 New-Item -ItemType Directory -Path $staging | Out-Null
 try {
     foreach ($rid in ($Runtime | Select-Object -Unique)) {
-        $executableName = if ($rid.StartsWith("win-")) { "catl.exe" } else { "catl" }
+        $executableName = if ($rid.StartsWith("win-")) { "tail.exe" } else { "tail" }
         $output = Join-Path $versionFolder $rid
         if (Test-Path -LiteralPath $output) {
             $unexpected = @(Get-ChildItem -LiteralPath $output -Force |
@@ -51,7 +51,7 @@ try {
         }
 
         $ridStaging = Join-Path $staging $rid
-        Write-Host "Publishing catl $version for $rid..."
+        Write-Host "Publishing tail $version for $rid..."
         & dotnet publish $project --configuration Release --runtime $rid --self-contained true `
             -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
             -p:PublishTrimmed=false -p:DebugType=None -p:DebugSymbols=false `
@@ -68,8 +68,8 @@ try {
         Copy-Item -LiteralPath $files[0].FullName -Destination $output -Force
         Write-Host "Published: $(Join-Path $output $executableName)"
         $archiveExtension = if ($rid.StartsWith("win-")) { ".zip" } else { ".tar.gz" }
-        $archive = Join-Path $versionFolder "catl-$version-$rid$archiveExtension"
-        $stagedArchive = Join-Path $staging "catl-$version-$rid$archiveExtension"
+        $archive = Join-Path $versionFolder "tail-$version-$rid$archiveExtension"
+        $stagedArchive = Join-Path $staging "tail-$version-$rid$archiveExtension"
         & dotnet $packager $files[0].FullName $stagedArchive
         if ($LASTEXITCODE -ne 0) {
             throw "Could not package the release for '$rid'."

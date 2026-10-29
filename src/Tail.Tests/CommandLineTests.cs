@@ -1,6 +1,4 @@
-using Catl;
-
-namespace Catl.Tests;
+namespace Tail.Tests;
 
 public sealed class CommandLineTests
 {

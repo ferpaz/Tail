@@ -2,7 +2,7 @@ using System.Text;
 using System.Threading.Channels;
 using Terminal.Gui;
 
-namespace Catl;
+namespace Tail;
 
 internal sealed class LogWindow
 {

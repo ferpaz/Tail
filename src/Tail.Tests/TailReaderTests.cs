@@ -1,11 +1,10 @@
 using System.Text;
-using Catl;
 
-namespace Catl.Tests;
+namespace Tail.Tests;
 
 public sealed class TailReaderTests : IDisposable
 {
-    private readonly string _directory = Path.Combine(Path.GetTempPath(), $"catl-tests-{Guid.NewGuid():N}");
+    private readonly string _directory = Path.Combine(Path.GetTempPath(), $"tail-tests-{Guid.NewGuid():N}");
     private string FilePath => Path.Combine(_directory, "test.log");
 
     public TailReaderTests() => Directory.CreateDirectory(_directory);

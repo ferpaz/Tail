@@ -1,4 +1,4 @@
-# CATL - Live text and log viewer
+# Tail - Live text and log viewer
 
 A **C# / .NET 10** console application for Windows and Linux, launched from
 PowerShell, CMD or a Linux terminal. Its Microsoft Edit-inspired interface
@@ -12,20 +12,22 @@ It does not open a separate graphical window or change the console size.
 **PowerShell:**
 
 ```powershell
-.\releases\1.0.0\win-x64\catl.exe "C:\Logs\my application.log"
+.\releases\1.0.0\win-x64\tail.exe "C:\Logs\my application.log"
 ```
 
 **CMD:**
 
 ```cmd
-releases\1.0.0\win-x64\catl.exe "C:\Logs\my application.log"
+releases\1.0.0\win-x64\tail.exe "C:\Logs\my application.log"
 ```
 
 The published executable is **self-contained**: installing .NET is not required.
 Use Windows Terminal, PowerShell or CMD in an interactive console.
 
 On Linux, use the extensionless binary for the appropriate RID. If you copy it
-from Windows, grant execute permission with `chmod +x catl`.
+from Windows, grant execute permission with `chmod +x tail`.
+Run it as `./tail "application.log"` from its directory to avoid invoking the
+system's standard `tail` command.
 
 > Self-contained releases still require the operating system's native dependencies
 > for .NET 10 and Terminal.Gui, such as ICU and ncurses on Linux.
@@ -34,9 +36,9 @@ from Windows, grant execute permission with `chmod +x catl`.
 ### Arguments
 
 ```text
-catl --help       (or -h)
-catl --version    (or -v)
-catl -- "-file.log"
+tail --help       (or -h)
+tail --version    (or -v)
+tail -- "-file.log"
 ```
 
 ## Controls
@@ -130,13 +132,13 @@ detection.
 ## Development
 
 Requires the **.NET 10 SDK**.
-Visual Studio or VSCode solution: `src\Catl.sln`.
+Visual Studio or VSCode solution: `src\Tail.sln`.
 
 ```powershell
-dotnet build .\src\Catl.sln
-dotnet run --project .\src\Catl -- "C:\Logs\application.log"
-dotnet test .\src\Catl.sln
-dotnet format .\src\Catl.sln --verify-no-changes
+dotnet build .\src\Tail.sln
+dotnet run --project .\src\Tail -- "C:\Logs\application.log"
+dotnet test .\src\Tail.sln
+dotnet format .\src\Tail.sln --verify-no-changes
 ```
 
 Tests use isolated temporary directories.
@@ -177,15 +179,15 @@ Output is organized as `releases\<version>\<RID>` with **one file per RID**:
 
 | RID | Binary | Platform |
 |---|---|---|
-| `win-x64` | `catl.exe` | Windows x64 |
-| `win-x86` | `catl.exe` | Windows x86 |
-| `win-arm64` | `catl.exe` | Windows ARM64 |
-| `linux-x64` | `catl` | Linux glibc x64 |
-| `linux-arm` | `catl` | Linux glibc ARM32 (ARMv7) |
-| `linux-arm64` | `catl` | Linux glibc ARM64 |
-| `linux-musl-x64` | `catl` | Linux musl x64, for example Alpine |
-| `linux-musl-arm` | `catl` | Linux musl ARM32 (ARMv7) |
-| `linux-musl-arm64` | `catl` | Linux musl ARM64 |
+| `win-x64` | `tail.exe` | Windows x64 |
+| `win-x86` | `tail.exe` | Windows x86 |
+| `win-arm64` | `tail.exe` | Windows ARM64 |
+| `linux-x64` | `tail` | Linux glibc x64 |
+| `linux-arm` | `tail` | Linux glibc ARM32 (ARMv7) |
+| `linux-arm64` | `tail` | Linux glibc ARM64 |
+| `linux-musl-x64` | `tail` | Linux musl x64, for example Alpine |
+| `linux-musl-arm` | `tail` | Linux musl ARM32 (ARMv7) |
+| `linux-musl-arm64` | `tail` | Linux musl ARM64 |
 
 No DLL, PDB, README or ZIP files are copied alongside the executable.
 
@@ -194,15 +196,15 @@ No DLL, PDB, README or ZIP files are copied alongside the executable.
 One archive per RID is created inside `releases\<version>`:
 
 ```text
-catl-<version>-win-x64.zip
-catl-<version>-win-x86.zip
-catl-<version>-win-arm64.zip
-catl-<version>-linux-x64.tar.gz
-catl-<version>-linux-arm.tar.gz
-catl-<version>-linux-arm64.tar.gz
-catl-<version>-linux-musl-x64.tar.gz
-catl-<version>-linux-musl-arm.tar.gz
-catl-<version>-linux-musl-arm64.tar.gz
+tail-<version>-win-x64.zip
+tail-<version>-win-x86.zip
+tail-<version>-win-arm64.zip
+tail-<version>-linux-x64.tar.gz
+tail-<version>-linux-arm.tar.gz
+tail-<version>-linux-arm64.tar.gz
+tail-<version>-linux-musl-x64.tar.gz
+tail-<version>-linux-musl-arm.tar.gz
+tail-<version>-linux-musl-arm64.tar.gz
 ```
 
 Each archive contains **only the binary**, without an enclosing directory.

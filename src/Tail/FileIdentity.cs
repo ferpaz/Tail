@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
-namespace Catl;
+namespace Tail;
 
 internal readonly record struct FileIdentity(ulong Volume, ulong Index)
 {
@@ -26,7 +26,7 @@ internal readonly record struct FileIdentity(ulong Volume, ulong Index)
             return new(((ulong)status.DeviceMajor << 32) | status.DeviceMinor, status.Inode);
         }
         if (!OperatingSystem.IsWindows())
-            throw new PlatformNotSupportedException("catl requires Windows or Linux.");
+            throw new PlatformNotSupportedException("tail requires Windows or Linux.");
         if (!GetFileInformationByHandle(stream.SafeFileHandle, out var information))
             throw new IOException("Could not identify the file.", new Win32Exception(Marshal.GetLastWin32Error()));
         return new(information.VolumeSerialNumber,

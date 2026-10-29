@@ -1,4 +1,4 @@
-namespace Catl.Packaging;
+namespace Tail.Packaging;
 
 internal static class Program
 {
@@ -6,7 +6,7 @@ internal static class Program
     {
         if (args.Length != 2)
         {
-            Console.Error.WriteLine("Usage: Catl.Packaging <binary> <archive.zip|archive.tar.gz>");
+            Console.Error.WriteLine("Usage: Tail.Packaging <binary> <archive.zip|archive.tar.gz>");
             return 1;
         }
         try

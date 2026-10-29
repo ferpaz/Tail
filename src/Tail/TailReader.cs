@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Catl;
+namespace Tail;
 
 public sealed record FileMetadata(string Folder, string Name, DateTime CreationTime, long Length,
     DateTime LastWriteTime);
