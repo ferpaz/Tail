@@ -9,3 +9,4 @@
 TestResults/
 *.coverage
 *.coveragexml
+.idea/
