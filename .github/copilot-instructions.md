@@ -2,7 +2,7 @@
 
 Catl is a read-only, full-screen live log viewer for Windows and Linux, written
 in C# targeting .NET 10. User documentation is in `README.md`; UI labels,
-command-line help and error messages are Spanish, while code identifiers are English.
+command-line help, error messages, scripts and code identifiers are English.
 
 ## Build, test and formatting
 
@@ -67,10 +67,17 @@ across writes. Reject control characters except CR, LF and tab, including ESC.
 
 `FileTextEncoding` values correspond by index to the encoding dialog's radio
 options; keep the enum, `TextEncoding.Resolve` and dialog choices synchronized.
-The header displays the encoding carried by the applied update, not merely the
-requested selection. Keep shortcut changes consistent with `CommandLine.Help`,
+The status-bar encoding button and information dialog display the encoding
+carried by the applied update, not merely the requested selection.
+Keep shortcut changes consistent with `CommandLine.Help`,
 `README.md` and UI tests. Ctrl-Q must also exit from the modal encoding dialog.
-The toolbar wraps below 70 columns using computed Terminal.Gui layout.
+The header contains only the filename; metadata lives in a live information
+dialog (Ctrl-I). Bottom status-bar buttons wrap to additional rows as needed and
+share actions with keyboard shortcuts. Both dialogs must support Ctrl-Q.
+Text stays gray on black even when focused, with one row and two columns of
+padding. The right-edge scrollbar stays visible; the horizontal bar hides during
+Word Wrap. Terminal.Gui 1.x recalculates scrollbar layout using its own Bounds
+when Size changes, so restore scrollbar frames against the parent after updates.
 
 ## Tests
 
@@ -87,6 +94,8 @@ using `InternalsVisibleTo`. Archive tests check exact contents and Linux mode.
 Change version and executable metadata only in `src\Directory.Build.props`.
 The SDK derives assembly/file versions; `--version` reads the assembly version.
 `publish.ps1` reads the evaluated MSBuild version and requires `major.minor.patch`.
+Run publication only when the user requests a commit of approved changes, not
+after each change. Publication must succeed before creating that commit.
 
 ```powershell
 .\publish.ps1                              # Entire nine-RID matrix

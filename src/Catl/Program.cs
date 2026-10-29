@@ -24,7 +24,7 @@ internal static class Program
 
             if (Console.IsInputRedirected || Console.IsOutputRedirected)
             {
-                Console.Error.WriteLine("Error: catl necesita una terminal interactiva (PowerShell, CMD o terminal Linux).");
+                Console.Error.WriteLine("Error: catl requires an interactive terminal (PowerShell, CMD or a Linux terminal).");
                 return 1;
             }
 
@@ -36,7 +36,7 @@ internal static class Program
             var info = new FileInfo(reader.FilePath);
             var initial = new FileUpdate("", true,
                 new(info.DirectoryName!, info.Name, info.CreationTime, info.Length, info.LastWriteTime),
-                "pendiente", true);
+                "pending", true);
             LogWindow.Run(reader, initial);
             return 0;
         }
@@ -44,7 +44,7 @@ internal static class Program
                                    or DecoderFallbackException or NotSupportedException)
         {
             Console.Error.WriteLine($"Error: {ex.Message}");
-            Console.Error.WriteLine("Use catl --help para ver la ayuda.");
+            Console.Error.WriteLine("Use catl --help for usage information.");
             return 1;
         }
     }

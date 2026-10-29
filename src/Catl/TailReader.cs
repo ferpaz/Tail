@@ -10,15 +10,15 @@ public sealed record FileUpdate(string Text, bool Reset, FileMetadata Metadata, 
 
 public sealed class TailReader(string path)
 {
-    private const int ChunkSize = 256 * 1024;
-    private long offset;
-    private FileIdentity? identity;
-    private Decoder? decoder;
-    private string encodingName = "pendiente";
-    private byte[] checkpoint = [];
-    private DateTime lastWrite;
-    private bool resetPending = true;
-    private FileTextEncoding encodingChoice;
+    private const int _chunkSize = 256 * 1024;
+    private long _offset;
+    private FileIdentity? _identity;
+    private Decoder? _decoder;
+    private string _encodingName = "pending";
+    private byte[] _checkpoint = [];
+    private DateTime _lastWrite;
+    private bool _resetPending = true;
+    private FileTextEncoding _encodingChoice;
 
     public string FilePath { get; } = Path.GetFullPath(path);
 
@@ -26,18 +26,18 @@ public sealed class TailReader(string path)
     {
         if (!Enum.IsDefined(choice))
             throw new ArgumentOutOfRangeException(nameof(choice));
-        encodingChoice = choice;
+        _encodingChoice = choice;
         Reset();
     }
 
     public void Reset()
     {
-        offset = 0;
-        identity = null;
-        decoder = null;
-        checkpoint = [];
-        encodingName = "pendiente";
-        resetPending = true;
+        _offset = 0;
+        _identity = null;
+        _decoder = null;
+        _checkpoint = [];
+        _encodingName = "pending";
+        _resetPending = true;
     }
 
     public FileUpdate Poll()
@@ -48,54 +48,54 @@ public sealed class TailReader(string path)
         var info = new FileInfo(FilePath);
         info.Refresh();
         if (!info.Exists)
-            throw new FileNotFoundException("El archivo desaparecio; esperando a que vuelva a existir.", FilePath);
+            throw new FileNotFoundException("The file disappeared; waiting for it to become available again.", FilePath);
         var metadata = new FileMetadata(info.DirectoryName!, info.Name, info.CreationTime, stream.Length,
             info.LastWriteTime);
 
-        if (identity != currentIdentity || stream.Length < offset ||
-            (stream.Length == offset && lastWrite != metadata.LastWriteTime) || !CheckpointMatches(stream))
+        if (_identity != currentIdentity || stream.Length < _offset ||
+            (stream.Length == _offset && _lastWrite != metadata.LastWriteTime) || !CheckpointMatches(stream))
             Reset();
-        identity = currentIdentity;
-        lastWrite = metadata.LastWriteTime;
+        _identity = currentIdentity;
+        _lastWrite = metadata.LastWriteTime;
 
-        if (decoder is null)
+        if (_decoder is null)
         {
             Span<byte> prefix = stackalloc byte[4];
             stream.Position = 0;
             var count = stream.Read(prefix);
-            var detected = TextEncoding.Resolve(encodingChoice, prefix[..count]);
+            var detected = TextEncoding.Resolve(_encodingChoice, prefix[..count]);
             if (detected is null)
-                return new("", resetPending, metadata, encodingName, true, encodingChoice);
-            decoder = detected.Value.Encoding.GetDecoder();
-            encodingName = detected.Value.Encoding.WebName;
-            offset = detected.Value.PreambleLength;
+                return new("", _resetPending, metadata, _encodingName, true, _encodingChoice);
+            _decoder = detected.Value.Encoding.GetDecoder();
+            _encodingName = detected.Value.Encoding.WebName;
+            _offset = detected.Value.PreambleLength;
         }
 
-        stream.Position = offset;
-        var bytes = new byte[(int)Math.Min(ChunkSize, Math.Max(0, stream.Length - offset))];
+        stream.Position = _offset;
+        var bytes = new byte[(int)Math.Min(_chunkSize, Math.Max(0, stream.Length - _offset))];
         var read = stream.Read(bytes);
         var chars = new char[read * 2 + 4];
         // Never flush at temporary EOF: another process can split a Unicode character across writes.
-        var characters = decoder.GetChars(bytes.AsSpan(0, read), chars, flush: false);
+        var characters = _decoder.GetChars(bytes.AsSpan(0, read), chars, flush: false);
         TextEncoding.Validate(chars.AsSpan(0, characters));
-        offset += read;
-        var checkpointLength = (int)Math.Min(64, offset);
-        checkpoint = new byte[checkpointLength];
-        stream.Position = offset - checkpointLength;
-        stream.ReadExactly(checkpoint);
-        var reset = resetPending;
-        resetPending = false;
-        return new(new string(chars, 0, characters), reset, metadata, encodingName, offset >= stream.Length,
-            encodingChoice);
+        _offset += read;
+        var checkpointLength = (int)Math.Min(64, _offset);
+        _checkpoint = new byte[checkpointLength];
+        stream.Position = _offset - checkpointLength;
+        stream.ReadExactly(_checkpoint);
+        var reset = _resetPending;
+        _resetPending = false;
+        return new(new string(chars, 0, characters), reset, metadata, _encodingName, _offset >= stream.Length,
+            _encodingChoice);
     }
 
     private bool CheckpointMatches(FileStream stream)
     {
-        if (checkpoint.Length == 0)
+        if (_checkpoint.Length == 0)
             return true;
-        Span<byte> actual = stackalloc byte[checkpoint.Length];
-        stream.Position = offset - checkpoint.Length;
+        Span<byte> actual = stackalloc byte[_checkpoint.Length];
+        stream.Position = _offset - _checkpoint.Length;
         var count = stream.ReadAtLeast(actual, actual.Length, throwOnEndOfStream: false);
-        return count == actual.Length && actual.SequenceEqual(checkpoint);
+        return count == actual.Length && actual.SequenceEqual(_checkpoint);
     }
 }

@@ -60,7 +60,7 @@ internal static class TextEncoding
         {
             if (char.IsControl(character) && character is not '\r' and not '\n' and not '\t')
                 throw new InvalidDataException(
-                    $"El archivo contiene datos binarios o controles no admitidos (U+{(int)character:X4}).");
+                    $"The file contains binary data or unsupported control characters (U+{(int)character:X4}).");
         }
     }
 }

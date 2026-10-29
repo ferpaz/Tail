@@ -15,20 +15,20 @@ internal readonly record struct FileIdentity(ulong Volume, ulong Index)
                 Architecture.X64 => 332,
                 Architecture.Arm64 => 291,
                 Architecture.Arm => 397,
-                _ => throw new PlatformNotSupportedException("Arquitectura Linux no admitida.")
+                _ => throw new PlatformNotSupportedException("Unsupported Linux architecture.")
             };
             const int atEmptyPath = 0x1000;
             const int statxInode = 0x100;
             if (StatX(syscall, stream.SafeFileHandle, "", atEmptyPath, statxInode, out var status) != 0)
-                throw new IOException("No se pudo identificar el archivo.", new Win32Exception(Marshal.GetLastWin32Error()));
+                throw new IOException("Could not identify the file.", new Win32Exception(Marshal.GetLastWin32Error()));
             if ((status.Mask & statxInode) == 0)
-                throw new IOException("El sistema de archivos no proporciono el inode del archivo.");
+                throw new IOException("The file system did not provide the file's inode.");
             return new(((ulong)status.DeviceMajor << 32) | status.DeviceMinor, status.Inode);
         }
         if (!OperatingSystem.IsWindows())
-            throw new PlatformNotSupportedException("catl requiere Windows o Linux.");
+            throw new PlatformNotSupportedException("catl requires Windows or Linux.");
         if (!GetFileInformationByHandle(stream.SafeFileHandle, out var information))
-            throw new IOException("No se pudo identificar el archivo.", new Win32Exception(Marshal.GetLastWin32Error()));
+            throw new IOException("Could not identify the file.", new Win32Exception(Marshal.GetLastWin32Error()));
         return new(information.VolumeSerialNumber,
             ((ulong)information.FileIndexHigh << 32) | information.FileIndexLow);
     }

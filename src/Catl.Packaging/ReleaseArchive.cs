@@ -9,9 +9,9 @@ public static class ReleaseArchive
     {
         var zip = archivePath.EndsWith(".zip", StringComparison.OrdinalIgnoreCase);
         if (!zip && !archivePath.EndsWith(".tar.gz", StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("El paquete debe tener extension .zip o .tar.gz.", nameof(archivePath));
+            throw new ArgumentException("The archive must have a .zip or .tar.gz extension.", nameof(archivePath));
         if (Path.GetFullPath(binaryPath).Equals(Path.GetFullPath(archivePath), StringComparison.OrdinalIgnoreCase))
-            throw new ArgumentException("El binario y el paquete deben tener rutas diferentes.", nameof(archivePath));
+            throw new ArgumentException("The binary and archive paths must be different.", nameof(archivePath));
 
         using var input = File.OpenRead(binaryPath);
         using var output = new FileStream(archivePath, FileMode.CreateNew, FileAccess.Write);

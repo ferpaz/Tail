@@ -5,10 +5,10 @@ namespace Catl.Tests;
 
 public sealed class TailReaderTests : IDisposable
 {
-    private readonly string directory = Path.Combine(Path.GetTempPath(), $"catl-tests-{Guid.NewGuid():N}");
-    private string FilePath => Path.Combine(directory, "test.log");
+    private readonly string _directory = Path.Combine(Path.GetTempPath(), $"catl-tests-{Guid.NewGuid():N}");
+    private string FilePath => Path.Combine(_directory, "test.log");
 
-    public TailReaderTests() => Directory.CreateDirectory(directory);
+    public TailReaderTests() => Directory.CreateDirectory(_directory);
 
     [Fact]
     public void ReadsInitialContentAndAppendedPartialLinesWithoutDuplicates()
@@ -39,7 +39,7 @@ public sealed class TailReaderTests : IDisposable
         writer.Write(Encoding.UTF8.GetBytes("nuevo\n"));
         writer.Flush();
         Assert.Equal("nuevo\n", reader.Poll().Text);
-        File.Move(FilePath, Path.Combine(directory, "rotado.log"));
+        File.Move(FilePath, Path.Combine(_directory, "rotado.log"));
         File.WriteAllText(FilePath, "archivo nuevo\n");
         var update = reader.Poll();
         Assert.True(update.Reset);
@@ -53,7 +53,7 @@ public sealed class TailReaderTests : IDisposable
         var timestamp = File.GetLastWriteTimeUtc(FilePath);
         var reader = new TailReader(FilePath);
         reader.Poll();
-        File.Move(FilePath, Path.Combine(directory, "rotado.log"));
+        File.Move(FilePath, Path.Combine(_directory, "rotado.log"));
         File.WriteAllText(FilePath, "contenido identico\n");
         File.SetLastWriteTimeUtc(FilePath, timestamp);
         var update = reader.Poll();
@@ -194,8 +194,8 @@ public sealed class TailReaderTests : IDisposable
 
     public void Dispose()
     {
-        foreach (var file in Directory.GetFiles(directory))
+        foreach (var file in Directory.GetFiles(_directory))
             File.Delete(file);
-        Directory.Delete(directory);
+        Directory.Delete(_directory);
     }
 }

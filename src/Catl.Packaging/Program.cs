@@ -6,7 +6,7 @@ internal static class Program
     {
         if (args.Length != 2)
         {
-            Console.Error.WriteLine("Uso: Catl.Packaging <binario> <archivo.zip|archivo.tar.gz>");
+            Console.Error.WriteLine("Usage: Catl.Packaging <binary> <archive.zip|archive.tar.gz>");
             return 1;
         }
         try
@@ -16,7 +16,7 @@ internal static class Program
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException)
         {
-            Console.Error.WriteLine($"Error al crear el paquete: {ex.Message}");
+            Console.Error.WriteLine($"Error creating the archive: {ex.Message}");
             return 1;
         }
     }

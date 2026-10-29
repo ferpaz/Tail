@@ -5,34 +5,36 @@ public enum CommandAction { View, Help, Version }
 public sealed record CommandLine(CommandAction Action, string? FilePath = null)
 {
     public const string Help = """
-        catl - Visor de texto y logs en vivo
+        catl - Live text and log viewer
 
-        Uso:
-          catl <archivo>
-          catl -- <archivo cuyo nombre empieza con guion>
+        Usage:
+          catl <file>
+          catl -- <file whose name starts with a hyphen>
           catl --help    | -h
           catl --version | -v
 
-        Use comillas si la ruta contiene espacios.
-        Ejemplo: catl "C:\Logs\mi aplicacion.log"
+        Use quotes if the path contains spaces.
+        Example: catl "C:\Logs\my application.log"
 
-        Texto: .txt, .log, .dat (solo texto), .csv, .tsv, .json, .jsonl,
-        .ndjson, .xml, .yaml, .yml, .ini, .cfg, .conf, .md y otros.
-        Se valida el contenido, no la extension; tambien admite archivos sin extension.
-        Automatico: UTF-8/ASCII y UTF-16/UTF-32 con BOM.
-        Boton Encoding: tambien UTF sin BOM, Windows-1252 y Latin-1.
-        Los archivos binarios y las codificaciones invalidas se rechazan.
+        Text: .txt, .log, .dat (text only), .csv, .tsv, .json, .jsonl,
+        .ndjson, .xml, .yaml, .yml, .ini, .cfg, .conf, .md and others.
+        Validates content, not extensions; files without extensions are also supported.
+        Automatic: UTF-8/ASCII and UTF-16/UTF-32 with a BOM.
+        Encoding button: also BOM-less UTF, Windows-1252 and Latin-1.
+        Binary files and invalid encodings are rejected.
 
-        Controles:
-          Ctrl-W    Activar/desactivar Word Wrap (tambien con el mouse)
-          Ctrl-F    Activar/desactivar seguimiento automatico del final
-          Ctrl-E    Cambiar encoding de lectura y recargar el archivo
-          F5        Reabrir y recargar el archivo
-          Ctrl-Q    Salir
-          Flechas, RePag/AvPag, Ctrl-Home/Ctrl-End y barras: navegar
+        Controls:
+          Ctrl-W    Toggle Word Wrap (also available in the bottom bar)
+          Ctrl-F    Toggle automatic follow at the end of the file
+          Ctrl-E    Change the reading encoding and reload the file
+          Ctrl-I    Show file information
+          F5        Reopen and reload the file
+          Ctrl-Q    Quit
+          Arrow keys, PageUp/PageDown, Ctrl-Home/Ctrl-End and scrollbars: navigate
 
-        Lectura compartida sin bloquear escritores; actualizacion cada 250 ms.
-        El contenido se conserva en memoria. No modifica ni guarda el archivo.
+        Shared read access without blocking writers; updates every 250 ms.
+        Bottom-bar actions also respond to mouse clicks.
+        Content is kept in memory. The file is never modified or saved.
         """;
 
     public static CommandLine Parse(string[] args)
@@ -46,16 +48,16 @@ public sealed record CommandLine(CommandAction Action, string? FilePath = null)
         {
             [var value] when !value.StartsWith('-') => value,
             ["--", var value] => value,
-            _ => throw new ArgumentException("Indique exactamente un archivo o use --help / --version.")
+            _ => throw new ArgumentException("Specify exactly one file or use --help / --version.")
         };
         if (string.IsNullOrWhiteSpace(path))
-            throw new ArgumentException("El nombre del archivo no puede estar vacio.");
+            throw new ArgumentException("The file name cannot be empty.");
 
         path = Path.GetFullPath(path);
         if (Directory.Exists(path))
-            throw new ArgumentException("La ruta corresponde a una carpeta, no a un archivo.");
+            throw new ArgumentException("The path refers to a directory, not a file.");
         if (!File.Exists(path))
-            throw new FileNotFoundException("No existe el archivo indicado.", path);
+            throw new FileNotFoundException("The specified file does not exist.", path);
         return new(CommandAction.View, path);
     }
 }
