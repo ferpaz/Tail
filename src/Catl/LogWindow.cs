@@ -21,30 +21,30 @@ internal sealed class LogWindow
     };
     private readonly Label _name = new() { X = 0, Y = 0, Width = Dim.Fill(), Height = 1 };
     private readonly View _actions = new() { X = 0, Width = Dim.Fill() };
-    private readonly List<int> ActionWidths = [];
+    private readonly List<int> _actionWidths = [];
 
-    private readonly Button Reopen = new("RELOAD (F5)")
+    private readonly Button _reopen = new("RELOAD (F5)")
     {
         AutoSize = true, Height = 1
     };
-    private readonly Button More = new("INFO (^I)")
+    private readonly Button _more = new("INFO (^I)")
     {
         AutoSize = true, Height = 1
     };
-    private readonly Button Close = new("QUIT (^Q)")
+    private readonly Button _close = new("QUIT (^Q)")
     {
         AutoSize = true, Height = 1
     };
-    private readonly Button Wrap = new("● WRAP (^W)")
+    private readonly Button _wrap = new("● WRAP (^W)")
     {
         AutoSize = true, Height = 1
     };
-    private readonly Button Follow = new("■ PAUSED (^F)")
+    private readonly Button _follow = new("■ PAUSED (^F)")
     {
         AutoSize = true, Height = 1, Width = 13
     };
 
-    private readonly Button EncodingButton = new("ENCODING (^E)")
+    private readonly Button _encodingButton = new("ENCODING (^E)")
     {
         AutoSize = true, 
         Height = 1, 
@@ -66,15 +66,18 @@ internal sealed class LogWindow
     
     private readonly Channel<MonitorMessage> _updates = Channel.CreateBounded<MonitorMessage>(
         new BoundedChannelOptions(1) { SingleReader = true, SingleWriter = true });
+
     private int _reload;
     private int _requestedEncoding;
-    private string? _error;
     private string _encoding = "";
+
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    public string? Error { get; private set; }
 
     private LogWindow(TailReader reader)
     {
         _reader = reader;
-        _actionButtons = [Close, More, Reopen, Wrap, Follow, EncodingButton];
+        _actionButtons = [_close, _more, _reopen, _wrap, _follow, _encodingButton];
     }
 
     public static void Run(TailReader reader, FileUpdate initial)
@@ -85,14 +88,16 @@ internal sealed class LogWindow
 
         Task? monitor = null;
         object? timeout = null;
+        var window = new LogWindow(reader);
 
         try
         {
-            var window = new LogWindow(reader);
             window.Build();
+            Application.RootKeyEvent += window.ProcessKeyEvent;
             window.Apply(initial);
 
-            monitor = Task.Run(() => window.MonitorAsync(cancellation.Token), cancellation.Token);
+            var token = cancellation.Token;
+            monitor = Task.Run(() => window.MonitorAsync(token), token);
 
             timeout = Application.MainLoop.AddTimeout(TimeSpan.FromMilliseconds(100), _ =>
             {
@@ -100,12 +105,12 @@ internal sealed class LogWindow
                 
                 if (message.Update is not null)
                 {
-                    window._error = null;
+                    window.Error = null;
                     window.Apply(message.Update);
                 }
                 else
                 {
-                    window._error = message.Error;
+                    window.Error = message.Error;
                     window.RefreshStatus();
                 }
 
@@ -116,6 +121,7 @@ internal sealed class LogWindow
         }
         finally
         {
+            Application.RootKeyEvent -= window.ProcessKeyEvent;
             cancellation.Cancel();
             if (timeout is not null) Application.MainLoop.RemoveTimeout(timeout);
 
@@ -129,7 +135,7 @@ internal sealed class LogWindow
             }
             finally
             {
-                cancellation?.Dispose();
+                cancellation.Dispose();
                 Application.Shutdown();
             }
         }
@@ -159,7 +165,7 @@ internal sealed class LogWindow
         _name.ColorScheme = blue;
         _actions.ColorScheme = blue;
 
-        ActionWidths.AddRange(_actionButtons.Select(ab => ab.Bounds.Width + 1));
+        _actionWidths.AddRange(_actionButtons.Select(ab => ab.Bounds.Width + 1));
         
         for (var index = 0; index < _actionButtons.Length; index++)
         {
@@ -173,14 +179,14 @@ internal sealed class LogWindow
         _actions.Height = Dim.Function(() => ActionRows);
         _actions.Y = Pos.AnchorEnd() - Pos.Function(() => ActionRows);
         
-        _text.Height = Dim.Fill(3);
+        _text.Height = Dim.Fill() - Dim.Function(() => ActionRows + 2);
 
-        Reopen.Clicked += () => Interlocked.Exchange(ref _reload, 1);
-        Close.Clicked += () => Application.RequestStop();
-        More.Clicked += ShowInformation;
-        EncodingButton.Clicked += ChooseEncoding;
-        Wrap.Clicked += SetWrap;
-        Follow.Clicked += SetFollow;
+        _reopen.Clicked += () => Interlocked.Exchange(ref _reload, 1);
+        _close.Clicked += () => Application.RequestStop();
+        _more.Clicked += ShowInformation;
+        _encodingButton.Clicked += ChooseEncoding;
+        _wrap.Clicked += SetWrap;
+        _follow.Clicked += SetFollow;
 
         Application.Top.Add(_name, _text, _actions);
 
@@ -243,7 +249,6 @@ internal sealed class LogWindow
             horizontal.Refresh();
         };
 
-        Application.RootKeyEvent += ProcessKeyEvent;
         _text.SetFocus();
     }
 
@@ -284,7 +289,7 @@ internal sealed class LogWindow
         var y = 0;
         for (var i = 0; i <= index; i++)
         {
-            var width = ActionWidths[i];
+            var width = _actionWidths[i];
             if (x != 0 && x + width > Application.Driver.Cols)
             {
                 x = 0;
@@ -422,15 +427,15 @@ internal sealed class LogWindow
 
     private void RefreshStatus()
     {
-        Wrap.Text = _text.WordWrap 
-            ? Wrap.Text.Replace("○", "●") 
-            : Wrap.Text.Replace("●", "○");
+        _wrap.Text = _text.WordWrap 
+            ? _wrap.Text.Replace("○", "●") 
+            : _wrap.Text.Replace("●", "○");
 
-        Follow.Text = _following 
-            ? Follow.Text.Replace("PAUSED", "LIVE") 
-            : Follow.Text.Replace("LIVE", "PAUSED");
+        _follow.Text = _following 
+            ? _follow.Text.Replace("PAUSED", "LIVE") 
+            : _follow.Text.Replace("LIVE", "PAUSED");
         
-        EncodingButton.Text = $"{_encoding}";
+        _encodingButton.Text = $"{_encoding}";
     }
 
     private void RefreshInformation()

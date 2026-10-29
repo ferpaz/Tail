@@ -39,10 +39,13 @@ public sealed record CommandLine(CommandAction Action, string? FilePath = null)
 
     public static CommandLine Parse(string[] args)
     {
-        if (args.Length == 1 && args[0] is "--help" or "-h")
-            return new(CommandAction.Help);
-        if (args.Length == 1 && args[0] is "--version" or "-v")
-            return new(CommandAction.Version);
+        switch (args)
+        {
+            case ["--help" or "-h"]:
+                return new(CommandAction.Help);
+            case ["--version" or "-v"]:
+                return new(CommandAction.Version);
+        }
 
         var path = args switch
         {
@@ -50,14 +53,17 @@ public sealed record CommandLine(CommandAction Action, string? FilePath = null)
             ["--", var value] => value,
             _ => throw new ArgumentException("Specify exactly one file or use --help / --version.")
         };
+
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("The file name cannot be empty.");
 
         path = Path.GetFullPath(path);
+
         if (Directory.Exists(path))
             throw new ArgumentException("The path refers to a directory, not a file.");
-        if (!File.Exists(path))
-            throw new FileNotFoundException("The specified file does not exist.", path);
-        return new(CommandAction.View, path);
+
+        return !File.Exists(path) 
+            ? throw new FileNotFoundException("The specified file does not exist.", path) 
+            : new(CommandAction.View, path);
     }
 }

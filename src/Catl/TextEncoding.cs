@@ -28,7 +28,7 @@ internal static class TextEncoding
         return (encoding, preamble.Length != 0 && prefix.StartsWith(preamble) ? preamble.Length : 0);
     }
 
-    public static (Encoding Encoding, int PreambleLength)? Detect(ReadOnlySpan<byte> prefix)
+    private static (Encoding Encoding, int PreambleLength)? Detect(ReadOnlySpan<byte> prefix)
     {
         // Wait for a split BOM rather than interpreting its bytes as UTF-8.
         if (prefix.IsEmpty ||

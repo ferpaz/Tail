@@ -12,7 +12,7 @@ public sealed class LogWindowTests
     {
         var path = Path.GetTempFileName();
         File.WriteAllText(path, string.Join('\n', Enumerable.Range(1, 100)
-            .Select(i => $"{i}: {new string('x', 120)}")) + "\n");
+            .Select(i => $"{i}: {new string('x', 200)}")) + "\n");
         var reader = new TailReader(path);
         var initial = reader.Poll();
         var driver = new FakeDriver();
@@ -42,14 +42,35 @@ public sealed class LogWindowTests
                 Assert.True(vertical.Visible);
                 Assert.True(vertical.ShowScrollIndicator);
                 Assert.Equal(driver.Cols - 1, vertical.Frame.X);
-                driver.SetBufferSize(100, 30);
-                Application.Top.LayoutSubviews();
-                Assert.Equal(98, text.Bounds.Width);
-                Assert.Equal(26, text.Bounds.Height);
-                driver.SetBufferSize(60, 18);
-                Application.Top.LayoutSubviews();
-                Assert.Equal(58, text.Bounds.Width);
-                Assert.Equal(14, text.Bounds.Height);
+                var horizontal = Application.Top.Subviews.OfType<ScrollBarView>().Single(bar => !bar.IsVertical);
+                var actions = ActionButton("^Q").SuperView;
+                Assert.NotNull(actions);
+                foreach (var (columns, rows) in new[] { (140, 30), (100, 30), (60, 18) })
+                {
+                    driver.SetBufferSize(columns, rows);
+                    Application.Refresh();
+                    Assert.Equal(columns - 2, text.Bounds.Width);
+                    Assert.Equal(actions.Frame.Y - 2, text.Frame.Bottom);
+                    Assert.Equal(text.Bounds.Height, vertical.Bounds.Height);
+                    Assert.Equal(actions.Frame.Y - 1, horizontal.Frame.Y);
+                    Assert.True(horizontal.Visible);
+                    Assert.True(horizontal.Frame.Bottom <= actions.Frame.Y);
+                    Assert.NotEqual(' ', driver.Contents[horizontal.Frame.Y, horizontal.Frame.X, 0]);
+                    horizontal.MouseEvent(new MouseEvent
+                    {
+                        X = horizontal.Bounds.Width - 1,
+                        Y = 0,
+                        Flags = MouseFlags.Button1Pressed
+                    });
+                    Assert.True(text.LeftColumn > 0);
+                    driver.SendKeys('w', ConsoleKey.W, false, false, true);
+                    Application.Refresh();
+                    Assert.False(horizontal.Visible);
+                    driver.SendKeys('w', ConsoleKey.W, false, false, true);
+                    Application.Refresh();
+                    Assert.True(horizontal.Visible);
+                    Assert.Equal(actions.Frame.Y - 1, horizontal.Frame.Y);
+                }
                 Assert.Equal(
                     [ActionButton("^Q"), ActionButton("^I"), ActionButton("F5"),
                         ActionButton("^W"), ActionButton("^F"), EncodingButton()],
@@ -74,7 +95,6 @@ public sealed class LogWindowTests
                     Flags = MouseFlags.Button1Pressed
                 });
                 Assert.True(text.TopRow > 5);
-                var horizontal = Application.Top.Subviews.OfType<ScrollBarView>().Single(bar => !bar.IsVertical);
                 horizontal.MouseEvent(new MouseEvent
                 {
                     X = horizontal.Bounds.Width - 1,

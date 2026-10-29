@@ -10,16 +10,14 @@ internal static class Program
         try
         {
             var options = CommandLine.Parse(args);
-            if (options.Action == CommandAction.Help)
+            switch (options.Action)
             {
-                Console.WriteLine(CommandLine.Help);
-                return 0;
-            }
-
-            if (options.Action == CommandAction.Version)
-            {
-                Console.WriteLine($"catl {Assembly.GetExecutingAssembly().GetName().Version!.ToString(3)}");
-                return 0;
+                case CommandAction.Help:
+                    Console.WriteLine(CommandLine.Help);
+                    return 0;
+                case CommandAction.Version:
+                    Console.WriteLine($"catl {Assembly.GetExecutingAssembly().GetName().Version!.ToString(3)}");
+                    return 0;
             }
 
             if (Console.IsInputRedirected || Console.IsOutputRedirected)
@@ -29,14 +27,15 @@ internal static class Program
             }
 
             var reader = new TailReader(options.FilePath!);
+            FileUpdate initial;
             using (var access = new FileStream(reader.FilePath, FileMode.Open, FileAccess.Read,
                        FileShare.ReadWrite | FileShare.Delete))
             {
+                var info = new FileInfo(reader.FilePath);
+                initial = new FileUpdate("", true,
+                    new(info.DirectoryName!, info.Name, info.CreationTime, access.Length, info.LastWriteTime),
+                    "pending", true);
             }
-            var info = new FileInfo(reader.FilePath);
-            var initial = new FileUpdate("", true,
-                new(info.DirectoryName!, info.Name, info.CreationTime, info.Length, info.LastWriteTime),
-                "pending", true);
             LogWindow.Run(reader, initial);
             return 0;
         }
