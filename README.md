@@ -1,9 +1,6 @@
 # Tail - Live text and log viewer
 
-A **C# / .NET 10** console application for Windows and Linux, launched from
-PowerShell, CMD or a Linux terminal. Its Microsoft Edit-inspired interface
-supports mouse input, vertical and horizontal scrollbars, Word Wrap and terminal
-resizing.
+A console application in **C# / .NET 10** for Windows and Linux—runnable from PowerShell, CMD, or a Linux terminal—designed to provide a live view of the end of a log file. Its Microsoft Edit-inspired interface supports mouse input, vertical and horizontal scrollbars, Word Wrap and terminal resizing.
 
 It does not open a separate graphical window or change the console size.
 
